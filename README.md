@@ -10,6 +10,7 @@ Suggest mitigation or treatment strategies.
 Ensure good image quality (sharpness, lighting, contrast) for accurate predictions.
 
 •	Main Function (main()):
+
 o	Sets the page configuration and title.
 o	Loads the model using load_keras_model().
 o	Provides instructions for enabling camera access.
@@ -25,8 +26,13 @@ o	Adds project overview to the main body.
 I wish to further refine the entire project.
 
 Isaac Baiden
+
 isaac.baiden.stu@uenr.edu.gh
+
 isbaiden.fx@gmail.com
+
 +233 20 8775507
+
 University of Ernergy and Natural Resources, 
+
 Sunyani Ghana
