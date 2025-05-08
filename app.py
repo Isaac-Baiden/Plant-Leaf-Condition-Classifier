@@ -21,6 +21,35 @@ st.set_page_config(
 st.title("🌿 Plant Leaf Condition Classifier")
 st.write("Upload a plant leaf image, and the model will classify its condition.")
 
+st.markdown("""
+<script>
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    document.getElementById('installBtn').style.display = 'block';
+  });
+
+  function installApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      });
+    }
+  }
+</script>
+
+<button id="installBtn" onclick="installApp()" style="display: none;">
+📲 Install Web App
+</button>
+""", unsafe_allow_html=True)
+
 
 # --- Constants ---
 MODEL_PATH = "vit_model.keras"
