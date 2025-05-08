@@ -11,10 +11,10 @@ import time
 
 # -------------------- STREAMLIT PAGE CONFIGURATION --------------------
 st.set_page_config(
-    page_title="🌿 Plant Leaf Classifier",
+    page_title=" Plant Leaf Classifier",
     page_icon="🌱",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
 
@@ -119,23 +119,26 @@ SAVE_DIR = "collected_data"
 IMG_HEIGHT, IMG_WIDTH = 64, 64  # Update based on your ViT model input size
 
 # -------------------- MODEL LOADING --------------------
+@st.cache_resource
 def load_keras_model(model_path):
-    """Load the ViT model with the PatchExtract custom layer."""
+    """Cache the model so it's only loaded once."""
     try:
         model = tf.keras.models.load_model(
             model_path, custom_objects=CUSTOM_OBJECTS, compile=False
         )
         return model
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        st.error(f" Error loading model: {e}")
         return None
 
-# Load the model outside cached function to avoid Streamlit caching errors
+# Load the cached model
+MODEL_PATH = "vit_model.keras"
 model = load_keras_model(MODEL_PATH)
+
 if model:
-    st.success("✅ Model loaded successfully!")
+    st.success(" Model loaded successfully!")
 else:
-    st.error("❌ Error loading model. Check the file path and custom layer registration.")
+    st.stop()  # Stop execution if model fails to load
 
 # -------------------- SIDEBAR UI TWEAKS --------------------
 st.sidebar.markdown(
@@ -178,19 +181,11 @@ def preprocess_image(image_pil, height, width):
     return np.expand_dims(img_array.astype(np.float32) / 255.0, axis=0)
 
 # -------------------- INTERACTIVITY: REAL-TIME UPDATES --------------------
-st.sidebar.subheader("🔄 Live Data Updates")
+st.sidebar.subheader(" Live Data Updates")
 
-if st.sidebar.button("🔄 Refresh Data"):
-    st.session_state["refresh"] = True
-# If refresh state exists, clear it and rerun the script
-elif "refresh" in st.session_state:
-    del st.session_state["refresh"]
+if st.sidebar.button(" Refresh App"):
     st.rerun()
-    
-placeholder = st.sidebar.empty()
-for i in range(5):
-    placeholder.text(f"Live Update: {datetime.now().strftime('%H:%M:%S')}")
-    time.sleep(1)
+
 
 # -------------------- IMAGE STORAGE & LOGGING --------------------
 def save_image(image: Image.Image, predicted_class: str) -> str:
@@ -239,15 +234,15 @@ def main():
         low_contrast, contrast = is_low_contrast(image)
 
         with col2:
-            st.write("### 🔎 Prediction")
+            st.write("###  Prediction")
             if st.button("Classify Image", use_container_width=True):
                 with st.spinner("Processing..."):
                     if blurry:
-                        st.warning(f"⚠️ Blurry image detected (Sharpness: {blur_score:.2f})")
+                        st.warning(f" Blurry image detected (Sharpness: {blur_score:.2f})")
                     if lighting_issue:
-                        st.warning(f"⚠️ Poor lighting (Brightness: {brightness:.2f})")
+                        st.warning(f" Poor lighting (Brightness: {brightness:.2f})")
                     if low_contrast:
-                        st.warning(f"⚠️ Low contrast (Contrast: {contrast:.2f})")
+                        st.warning(f" Low contrast (Contrast: {contrast:.2f})")
 
                     if blurry or lighting_issue or low_contrast:
                         st.stop()
@@ -258,8 +253,8 @@ def main():
                     confidence = prediction[0][class_index]
                     predicted_class = CLASS_NAMES[class_index]
 
-                    st.success(f"✅ Predicted: **{predicted_class}**")
-                    st.info(f"🔬 Confidence: **{confidence * 100:.2f}%**")
+                    st.success(f" Predicted: **{predicted_class}**")
+                    st.info(f" Confidence: **{confidence * 100:.2f}%**")
 
                     # Display mitigation strategy
                     strategy = MITIGATION_STRATEGIES.get(predicted_class, "No specific strategy found.")
@@ -314,7 +309,7 @@ def render_footer():
     <div style='display: flex; align-items: center; justify-content: center;'>
         {image_html}
         <div style='text-align: left; font-size: 14px; color: gray;'>
-            <p><strong>Contact Address:</strong> Computer Science dept. - UENR, Sunyani, Ghana</p>
+            <p><strong>Contact Address:</strong> Computer Science Dept. - UENR, Sunyani - Ghana</p>
             <p><strong>Email:</strong> <a href='mailto:yourname@example.com'>isaac.baiden.stu@uenr.edu.gh</a></p>
             <p><strong>Skills:</strong> Machine Learning | Deep Learning | Computer Vision | Streamlit | TensorFlow | Python</p>
             <p>© 2025 Crop Disease Classifier App</p>
